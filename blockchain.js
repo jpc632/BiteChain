@@ -1,11 +1,9 @@
-const { mineBlock } = require('./block');
 const Block = require('./block');
 const cryptoHash = require('./crypto-hash');
 
 class Blockchain{
     constructor(){
         this.chain = [Block.genesis()];
-        this.difficulty
     }
 
     getLatestBlock(){
@@ -22,12 +20,17 @@ class Blockchain{
     }
 
     replaceChain(chain){
-        if(this.chain.length >= chain.length)
+        if(this.chain.length >= chain.length){
+            console.error('The incoming chain must be longer.');
             return;
+        }
         
-        if(!Blockchain.isValidChain(chain))
+        if(!Blockchain.isValidChain(chain)){
+            console.error('The incoming chain must be valid.');
             return;
+        }
 
+        console.log('Replacing chain with', chain);
         this.chain = chain;
     }
 
@@ -37,12 +40,12 @@ class Blockchain{
         
         for(let i = 1; i < chain.length; i++){
             const previousBlock = chain[i - 1];
-            const { timestamp, previousHash, hash, data } = chain[i];
+            const { timestamp, previousHash, hash, data, nonce, difficulty } = chain[i];
 
             if(previousHash !== previousBlock.hash)
                 return false;
             
-            if(hash !== cryptoHash(timestamp, data, previousHash))
+            if(hash !== cryptoHash(timestamp, data, previousHash, nonce, difficulty))
                 return false;
         }
         return true;
