@@ -2,7 +2,7 @@ const express = require('express');
 const request = require('request');
 const bodyParser = require('body-parser');
 const { CONFIGURE_PORT } = require('./lib/config');
-const Blockchain = require('./lib/blockchain/index');
+const Blockchain = require('./lib/blockchain');
 const PubSub = require('./lib/pubsub');
 
 const app = express();
