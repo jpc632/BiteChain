@@ -1,0 +1,20 @@
+[
+    {
+        "data": [
+            "GENESIS"
+        ],
+        "timestamp": 10000,
+        "hash": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+        "previousHash": null,
+        "nonce": 0,
+        "difficulty": 1
+    },
+    {
+        "data": "real",
+        "timestamp": 1611552686328,
+        "hash": "fef1ceb30367966505a42454eb91b82189f3ffd6003a25c44b503296de6cfbc3",
+        "previousHash": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+        "nonce": 1,
+        "difficulty": 0
+    }
+]
