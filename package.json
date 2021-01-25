@@ -11,7 +11,8 @@
     "start-redis": "redis-server --daemonize yes"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "verbose": false
   },
   "keywords": [],
   "author": "",
@@ -25,6 +26,7 @@
     "body-parser": "^1.18.3",
     "elliptic": "^6.5.3",
     "express": "^4.16.3",
+    "hex-to-binary": "^1.0.1",
     "redis": "^2.8.0",
     "request": "^2.88.0",
     "uuid": "^3.3.2"
