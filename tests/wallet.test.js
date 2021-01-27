@@ -7,7 +7,7 @@ const { STARTING_BALANCE } = require('../lib/config');
 describe('Wallet', () => {
     let wallet;
     beforeEach(() => {
-        wallet = new Wallet();
+        wallet = new Wallet('secret');
     });
 
     it('has a `balance`', () => {
@@ -36,7 +36,7 @@ describe('Wallet', () => {
                 verifySignature({
                     publicKey: wallet.publicKey,
                     data,
-                    signature: new Wallet().sign(data)
+                    signature: new Wallet("other").sign(data)
                 })
             ).toBeFalsy();
         });
@@ -113,11 +113,11 @@ describe('Wallet', () => {
             let transactionOne, transactionTwo;
 
             beforeEach(() => {
-                transactionOne = new Wallet().createTransaction({
+                transactionOne = new Wallet("other").createTransaction({
                     recipient: wallet.publicKey,
                     amount: 10
                 });
-                transactionTwo = new Wallet().createTransaction({
+                transactionTwo = new Wallet("foo").createTransaction({
                     recipient: wallet.publicKey,
                     amount: 20
                 });
@@ -174,7 +174,7 @@ describe('Wallet', () => {
                         });
                         
                         blockchain.addBlock({ data: [recentTransaction, sameBlockTransaction]});
-                        nextBlockTransaction = new Wallet().createTransaction({
+                        nextBlockTransaction = new Wallet('foofoo').createTransaction({
                             recipient: wallet.publicKey, 
                             amount: 75
                         });

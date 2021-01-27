@@ -9,7 +9,7 @@ const TransactionMiner = require('./lib/transaction-miner');
 
 const app = express();
 const blockchain = new Blockchain();
-const wallet = new Wallet();
+const wallet = new Wallet("secret");
 const transactionPool = new TransactionPool();
 const pubsub = new PubSub({ blockchain, transactionPool });
 const transactionMiner = new TransactionMiner({ blockchain, wallet, transactionPool, pubsub });
@@ -78,3 +78,37 @@ app.get('/api/wallet-info', (req, res) => {
         balance: Wallet.calculateBalance({ chain: blockchain.chain, address })
     });
 });
+
+
+
+const request = require('request');
+
+const addTransaction = () => {
+    const transaction = {amount: 50, recipient: 'foofoo'};
+
+    request.post({ 
+        url: 'http://localhost:3000/api/transact',
+        json: transaction
+    }, (err, res, body) => {
+        if(!err && res.statusCode === 200)
+            return body;
+    });
+
+    return transaction;
+}
+
+
+const vorpal = require('vorpal')();
+ 
+vorpal
+    .command('foo', 'Outputs "bar".')
+    .action(function(args, callback) {
+        const transaction = addTransaction();
+        this.log(transaction);
+        callback();
+    });
+ 
+vorpal
+    .delimiter('Bitechain$')
+    .show();
+

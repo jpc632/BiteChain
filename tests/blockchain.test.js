@@ -142,7 +142,7 @@ describe('Blockchain', () => {
         let transaction, rewardTransaction, wallet;
 
         beforeEach(() => {
-            wallet = new Wallet();
+            wallet = new Wallet('secret');
             transaction = wallet.createTransaction({ amount: 20, recipient: 'foo-address' });
             rewardTransaction = Transaction.rewardTransaction({ 
                 minerWallet: wallet, 

@@ -7,7 +7,7 @@ describe('Transaction', () => {
     let transaction, senderWallet, recipient, amount;
 
     beforeEach(() => {
-        senderWallet = new Wallet();
+        senderWallet = new Wallet('secret');
         recipient = 'recipient-public-key';
         amount = 50;
         transaction = new Transaction({ senderWallet, recipient, amount });
@@ -87,7 +87,7 @@ describe('Transaction', () => {
 
             describe('and the transaction input signature is invalid', () => {
                 it('returns false and logs an error', () => {
-                    transaction.input.signature = new Wallet().sign('data');
+                    transaction.input.signature = new Wallet('foofoo').sign('data');
                     
                     expect(Transaction.validTransaction(transaction)).toBeFalsy();
                     expect(errorMock).toHaveBeenCalled();
@@ -164,7 +164,7 @@ describe('Transaction', () => {
         let rewardTransaction, minerWallet;
 
         beforeEach(() => {
-            minerWallet = new Wallet();
+            minerWallet = new Wallet('miner-secret');
             rewardTransaction = Transaction.rewardTransaction({ minerWallet });
         });
 
