@@ -10,9 +10,32 @@
         "difficulty": 1
     },
     {
-        "data": "real",
-        "timestamp": 1611552686328,
-        "hash": "fef1ceb30367966505a42454eb91b82189f3ffd6003a25c44b503296de6cfbc3",
+        "data": [
+            {
+                "id": "9fdc2780-608e-11eb-b49a-b1b52489f8a5",
+                "outputMap": {
+                    "bob": 300,
+                    "12ff16c6c4f56a73922c23725f3b1f1d3958a03a981416d1e44231ff934c91fc": 200
+                },
+                "input": {
+                    "timestamp": 1611745124856,
+                    "amount": 500,
+                    "address": "12ff16c6c4f56a73922c23725f3b1f1d3958a03a981416d1e44231ff934c91fc",
+                    "signature": "041890DCAEA9D4820A79F0E04C4EEFDEE64E2F3C04681F564AEBCD58D573EF322974DB560EFF3680BDB309570E8ADC9790E00FBF3E9A3EFA1119008D4C8F4C03"
+                }
+            },
+            {
+                "id": "a412cc50-608e-11eb-b49a-b1b52489f8a5",
+                "outputMap": {
+                    "12ff16c6c4f56a73922c23725f3b1f1d3958a03a981416d1e44231ff934c91fc": 35
+                },
+                "input": {
+                    "address": "*authorised-reward-transaction*"
+                }
+            }
+        ],
+        "timestamp": 1611745131925,
+        "hash": "4c582559d26b48bd7da95dadbd831d7619af186b12a94ac7921a55bca0e8c016",
         "previousHash": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
         "nonce": 1,
         "difficulty": 0

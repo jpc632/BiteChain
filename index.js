@@ -7,9 +7,11 @@ const TransactionPool = require('./lib/wallet/transaction-pool');
 const Wallet = require('./lib/wallet');
 const TransactionMiner = require('./lib/transaction-miner');
 
+
+
 const app = express();
 const blockchain = new Blockchain();
-const wallet = new Wallet("secret");
+const wallet = new Wallet('secret');
 const transactionPool = new TransactionPool();
 const pubsub = new PubSub({ blockchain, transactionPool });
 const transactionMiner = new TransactionMiner({ blockchain, wallet, transactionPool, pubsub });
@@ -79,36 +81,94 @@ app.get('/api/wallet-info', (req, res) => {
     });
 });
 
-
-
-const request = require('request');
-
-const addTransaction = () => {
-    const transaction = {amount: 50, recipient: 'foofoo'};
-
-    request.post({ 
-        url: 'http://localhost:3000/api/transact',
-        json: transaction
-    }, (err, res, body) => {
-        if(!err && res.statusCode === 200)
-            return body;
-    });
-
-    return transaction;
-}
-
-
 const vorpal = require('vorpal')();
- 
+const request = require('request');
+const { CONFIGURE_PORT } = require('./lib/config');
+const { NODE_ADDRESS } = CONFIGURE_PORT;
+
 vorpal
-    .command('foo', 'Outputs "bar".')
+    .command('transfer', 'Transfer funds to another wallet.')
+    .option('-a, --amount <amt>', 'The amount to send.')
+    .option('-r, --recipient <rcp>', 'The recipients wallet address.')
+    .types({
+        string: ['r', 'recipient']
+    })
     .action(function(args, callback) {
-        const transaction = addTransaction();
-        this.log(transaction);
+        const transaction = { 
+            amount: args.amt, 
+            recipient: args.rcp 
+        };
+
+        request.post({ 
+            url: `http://localhost:3000/api/transact`,
+            json: transaction
+        }, (err, res, body) => {
+            if(!err && res.statusCode === 200)
+                this.log('Success');
+        });
         callback();
     });
- 
-vorpal
-    .delimiter('Bitechain$')
-    .show();
 
+vorpal
+    .command('wallet', 'Display your wallet details.')
+    .action(function(args, callback) {
+        request.get({
+            url: `http://localhost:3000/api/wallet-info`
+        }, (error, response, body) => {
+            if(!error && response.statusCode === 200){
+                const walletDetails = JSON.parse(body);
+                this.log(walletDetails);
+            }
+        });
+        callback();
+    });
+
+vorpal
+    .command('mine', 'Mine a new block.')
+    .action(function(args, callback) {
+        request.get({
+            url: `http://localhost:3000/api/mine-transactions`
+        }, (error, response, body) => {
+            if(!error && response.statusCode === 200){
+                const block = JSON.parse(body);
+                this.log(block);
+            }
+        });
+        callback();
+    });
+
+vorpal
+    .command('transaction-pool', 'View pending transactions.')
+    .action(function(args, callback) {
+        request.get({
+            url: `http://localhost:3000/api/transaction-pool-map`
+        }, (error, response, body) => {
+            if(!error && response.statusCode === 200){
+                const transactionPool = JSON.parse(body);
+                this.log(transactionPool);
+            }
+        });
+        callback();
+    });
+
+const API = require('./api');
+
+vorpal
+    .command('chain', 'View all blocks on the chain.')
+    .action(function(args, callback) {
+        API.displayChain(this);
+        callback();
+    });
+
+vorpal
+    .command('login', 'login')
+    .action(function(args, callback){
+        this.log('hello');
+        callback();
+    });
+
+vorpal.exec('login')
+
+vorpal
+  .delimiter('Bitechain$')
+  .show();
