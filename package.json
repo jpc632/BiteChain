@@ -18,18 +18,19 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "cross-env": "^5.2.0",
+    "cross-env": "^5.2.1",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.19.4"
   },
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.19.0",
     "elliptic": "^6.5.3",
-    "express": "^4.16.3",
+    "express": "^4.17.1",
     "hex-to-binary": "^1.0.1",
+    "inquirer": "^7.3.3",
     "redis": "^2.8.0",
-    "request": "^2.88.0",
-    "uuid": "^3.3.2",
+    "request": "^2.88.2",
+    "uuid": "^3.4.0",
     "vorpal": "^1.12.0"
   }
 }

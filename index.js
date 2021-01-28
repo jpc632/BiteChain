@@ -10,13 +10,22 @@ const TransactionMiner = require('./lib/transaction-miner');
 
 
 const app = express();
-const blockchain = new Blockchain();
-const wallet = new Wallet('secret');
-const transactionPool = new TransactionPool();
-const pubsub = new PubSub({ blockchain, transactionPool });
-const transactionMiner = new TransactionMiner({ blockchain, wallet, transactionPool, pubsub });
 
-startup({ app, blockchain, transactionPool });
+let wallet, 
+    blockchain, 
+    transactionPool, 
+    transactionMiner, 
+    pubsub;
+
+const init = (secret) => {
+    blockchain = new Blockchain();
+    wallet = new Wallet(secret);
+    transactionPool = new TransactionPool();
+    pubsub = new PubSub({ blockchain, transactionPool });
+    transactionMiner = new TransactionMiner({ blockchain, wallet, transactionPool, pubsub });
+
+    startup({ app, blockchain, transactionPool });
+}
 
 /*
     HANDLE REQUESTS
@@ -152,6 +161,7 @@ vorpal
     });
 
 const API = require('./api');
+var inquirer = require('inquirer');
 
 vorpal
     .command('chain', 'View all blocks on the chain.')
@@ -161,14 +171,25 @@ vorpal
     });
 
 vorpal
-    .command('login', 'login')
-    .action(function(args, callback){
-        this.log('hello');
-        callback();
+    .command('login', 'Login to your Bitechain wallet.')
+    .action(function(args, cb){
+        const self = this;
+        return inquirer.prompt({
+            type: 'input',
+            name: 'secret',
+            message: 'Enter your secret phrase to access your wallet: ',
+        }).then(result => {
+            init(result.secret);
+            cb();
+        });
     });
 
-vorpal.exec('login')
-
 vorpal
-  .delimiter('Bitechain$')
-  .show();
+    .exec('login')
+    .then(function(){
+        return vorpal
+            .delimiter('Bitechain$')
+            .show();
+});
+
+
