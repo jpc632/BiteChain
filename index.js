@@ -1,21 +1,19 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const startup = require('./lib/startup');
+const {startup} = require('./lib/startup');
 const Blockchain = require('./lib/blockchain');
 const PubSub = require('./lib/pubsub');
 const TransactionPool = require('./lib/wallet/transaction-pool');
 const Wallet = require('./lib/wallet');
 const TransactionMiner = require('./lib/transaction-miner');
 
-
-
 const app = express();
-
 let wallet, 
     blockchain, 
     transactionPool, 
     transactionMiner, 
-    pubsub;
+    pubsub,
+    api;
 
 const init = (secret) => {
     blockchain = new Blockchain();
@@ -24,7 +22,7 @@ const init = (secret) => {
     pubsub = new PubSub({ blockchain, transactionPool });
     transactionMiner = new TransactionMiner({ blockchain, wallet, transactionPool, pubsub });
 
-    startup({ app, blockchain, transactionPool });
+    api = startup({ app, blockchain, transactionPool });
 }
 
 /*
@@ -90,87 +88,52 @@ app.get('/api/wallet-info', (req, res) => {
     });
 });
 
-const vorpal = require('vorpal')();
-const request = require('request');
-const { CONFIGURE_PORT } = require('./lib/config');
-const { NODE_ADDRESS } = CONFIGURE_PORT;
+const cli = require('vorpal')();
+cli.use(require('./cli'));
 
-vorpal
-    .command('transfer', 'Transfer funds to another wallet.')
+cli
+    .command('transfer <amt> <rcp>', 'Transfer funds to another wallet.')
     .option('-a, --amount <amt>', 'The amount to send.')
     .option('-r, --recipient <rcp>', 'The recipients wallet address.')
     .types({
         string: ['r', 'recipient']
     })
     .action(function(args, callback) {
-        const transaction = { 
-            amount: args.amt, 
-            recipient: args.rcp 
-        };
-
-        request.post({ 
-            url: `http://localhost:3000/api/transact`,
-            json: transaction
-        }, (err, res, body) => {
-            if(!err && res.statusCode === 200)
-                this.log('Success');
-        });
+        api.transferFunds(this, args);
         callback();
     });
 
-vorpal
+cli
     .command('wallet', 'Display your wallet details.')
     .action(function(args, callback) {
-        request.get({
-            url: `http://localhost:3000/api/wallet-info`
-        }, (error, response, body) => {
-            if(!error && response.statusCode === 200){
-                const walletDetails = JSON.parse(body);
-                this.log(walletDetails);
-            }
-        });
+        api.displayWallet(this);
         callback();
     });
 
-vorpal
+cli
     .command('mine', 'Mine a new block.')
     .action(function(args, callback) {
-        request.get({
-            url: `http://localhost:3000/api/mine-transactions`
-        }, (error, response, body) => {
-            if(!error && response.statusCode === 200){
-                const block = JSON.parse(body);
-                this.log(block);
-            }
-        });
+        api.mineBlock(this);
         callback();
     });
 
-vorpal
+cli
     .command('transaction-pool', 'View pending transactions.')
     .action(function(args, callback) {
-        request.get({
-            url: `http://localhost:3000/api/transaction-pool-map`
-        }, (error, response, body) => {
-            if(!error && response.statusCode === 200){
-                const transactionPool = JSON.parse(body);
-                this.log(transactionPool);
-            }
-        });
+        api.displayTransactionPool(this);
         callback();
     });
 
-const API = require('./api');
 var inquirer = require('inquirer');
 
-vorpal
+cli
     .command('chain', 'View all blocks on the chain.')
     .action(function(args, callback) {
-        API.displayChain(this);
+        api.displayChain(this);
         callback();
     });
 
-vorpal
+cli
     .command('login', 'Login to your Bitechain wallet.')
     .action(function(args, cb){
         const self = this;
@@ -184,10 +147,10 @@ vorpal
         });
     });
 
-vorpal
+cli
     .exec('login')
     .then(function(){
-        return vorpal
+        return cli
             .delimiter('Bitechain$')
             .show();
 });
